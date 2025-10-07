@@ -1,58 +1,97 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setLoading(true);
 
     try {
-      const res = await fetch("", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-      const data = await res.json();
+      const res = await axios.post(
+        "https://smart-attendance-backend-3.onrender.com/api/auth/login",
+        formData,
+        { signal: controller.signal }
+      );
 
-      if (res.status === 200 && data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.dispatchEvent(new Event("storageUpdate"));
-        alert(`Welcome ${data.user.username || data.user.name}!`);
-        navigate("/dashboard", { state: { user: data.user } });
-      } else {
-        alert(data.error || "Invalid credentials!");
+      clearTimeout(timeout);
+
+      localStorage.setItem("token", res.data.token);
+      if (res.data.user) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
       }
+
+      setMessage(res.data.message || "Login successful 🎉");
+      setTimeout(() => navigate("/dashboard"), 800);
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again later.");
+      if (axios.isCancel(error)) {
+        setMessage("⏳ Server is slow. Please retry.");
+      } else {
+        setMessage(error.response?.data?.message || "Login failed ❌");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="form-container">
+    <div className="login-container">
       <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+
+      {message && (
+        <p
+          className={`message ${
+            message.toLowerCase().includes("fail") ||
+            message.toLowerCase().includes("error")
+              ? "error"
+              : "success"
+          }`}
+        >
+          {message}
+        </p>
+      )}
+
+      <form onSubmit={handleSubmit}>
         <input
           type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="email"
+          placeholder="Email (@navgurukul.org)"
+          value={formData.email}
+          onChange={handleChange}
           required
         />
+
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
         />
-        <button type="submit">Login</button>
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
+
+      <p>
+        Don’t have an account? <Link to="/signup">Sign Up here</Link>
+      </p>
     </div>
   );
 };
