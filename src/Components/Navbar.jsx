@@ -26,8 +26,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <img src="logo.png" alt="Smart Attendance System Logo" className="logo-img" />
-        <h1 className="navbar-title">𝑺𝒎𝒂𝒓𝒕 𝑨𝒕𝒕𝒆𝒏𝒅𝒂𝒏𝒄𝒆 𝑺𝒚𝒔𝒕𝒆𝒎</h1>
+        <img src="navgurukul_logo.png" alt="Smart Attendance System Logo" className="logo-img" />
       </div>
 
       <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
