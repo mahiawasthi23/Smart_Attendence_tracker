@@ -1,20 +1,25 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./Components/Navbar";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Pages/Login";
+import Sign from "./Pages/Sign";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Navbar />
+  const user = localStorage.getItem("user");
 
+
+  return (
+    <Router>
       <Routes>
-        <Route path="/" element={<h1>Home Page</h1>} />
-        <Route path="/login" element={<h1>Login Page</h1>} />
-        <Route path="/signup" element={<h1>Signup Page</h1>} />
-        <Route path="/dashboard" element={<h1>Dashboard Page</h1>} />
-        <Route path="/profile" element={<h1>Profile Page</h1>} />
+        <Route
+          path="/"
+          element={
+            user ? <Navigate to="/login" replace /> : <Navigate to="/signup" replace />
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Sign />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
