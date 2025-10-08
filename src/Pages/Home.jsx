@@ -94,7 +94,7 @@ const Home = () => {
               <p>Mahima</p>
             </div>
             <div className="member">
-              <img src="mahima.jpeg" alt="Nasrina" />
+              <img src="Nasrina.png" alt="Nasrina" />
               <p>Nasrina</p>
             </div>
           </div>
