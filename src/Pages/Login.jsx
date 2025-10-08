@@ -62,11 +62,10 @@ const Login = ({ setUser }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label>Email:</label>
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
+              placeholder="email"
               value={formData.email}
               onChange={handleChange}
               required
@@ -74,11 +73,10 @@ const Login = ({ setUser }) => {
           </div>
 
           <div className="input-group">
-            <label>Password:</label>
             <input
               type="password"
               name="password"
-              placeholder="Enter your password"
+              placeholder="password"
               value={formData.password}
               onChange={handleChange}
               required
