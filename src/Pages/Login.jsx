@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -15,12 +15,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setError("");
     setLoading(true);
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeout = setTimeout(() => controller.abort(), 10000);
 
       const res = await axios.post(
         "https://smart-attendance-backend-3.onrender.com/api/auth/login",
@@ -29,69 +29,73 @@ const Login = () => {
       );
 
       clearTimeout(timeout);
+      setLoading(false);
 
       localStorage.setItem("token", res.data.token);
+
       if (res.data.user) {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        const userObj = typeof res.data.user === "string"
+          ? { email: res.data.user }
+          : res.data.user;
+
+        localStorage.setItem("user", JSON.stringify(userObj));
+        setUser(userObj);
       }
 
-      setMessage(res.data.message || "Login successful 🎉");
-      setTimeout(() => navigate("/dashboard"), 800);
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        setMessage("⏳ Server is slow. Please retry.");
-      } else {
-        setMessage(error.response?.data?.message || "Login failed ❌");
-      }
-    } finally {
+      navigate("/dashboard");
+    } catch (err) {
       setLoading(false);
+      if (err.code === "ERR_CANCELED") {
+        setError("Request timed out. Please try again.");
+      } else if (err.response && err.response.data) {
+        setError(err.response.data.message || "Invalid credentials.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <div className="login-box">
+        <h2>Login</h2>
 
-      {message && (
-        <p
-          className={`message ${
-            message.toLowerCase().includes("fail") ||
-            message.toLowerCase().includes("error")
-              ? "error"
-              : "success"
-          }`}
-        >
-          {message}
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password:</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {error && <p className="error-msg">{error}</p>}
+
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="signup-link">
+          Don’t have an account? <a href="/signup">Sign up</a>
         </p>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email (@navgurukul.org)"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </form>
-
-      <p>
-        Don’t have an account? <Link to="/signup">Sign Up here</Link>
-      </p>
+      </div>
     </div>
   );
 };

@@ -1,14 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #eef1f4;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 .signup-container {
   width: 100%;
   max-width: 400px;
