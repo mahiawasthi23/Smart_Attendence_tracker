@@ -25,7 +25,7 @@ const Sign = () => {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+      const timeout = setTimeout(() => controller.abort(), 10000); 
 
       const res = await axios.post(
         "https://smart-attendance-backend-3.onrender.com/api/auth/signup",
@@ -41,7 +41,6 @@ const Sign = () => {
 
       setFormData({ name: "", email: "", password: "", role: "student" });
 
-      // Navigate fast to login
       setTimeout(() => navigate("/login"), 1000);
     } catch (error) {
       if (axios.isCancel(error)) {

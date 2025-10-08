@@ -42,7 +42,9 @@
   display: block;
   font-weight: 600;
   margin-bottom: 5px;
+  text-align: left; 
 }
+
 
 .input-group input {
   width: 100%;
@@ -67,10 +69,6 @@
   cursor: pointer;
   font-size: 1rem;
   transition: 0.3s;
-}
-
-.login-btn:hover {
-  background-color: #0056b3;
 }
 
 .error-msg {
