@@ -1,9 +1,20 @@
+:root {
+  --navbar-height: 80px;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --navbar-height: 100px; 
+  }
+}
+
 .login-container {
-  margin-top: 100px;
+  margin-top: calc(var(--navbar-height) + 40px);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 100px);
+  min-height: calc(100vh - var(--navbar-height));
+  padding: 20px;
 }
 
 .login-box {
@@ -49,7 +60,7 @@
 .login-btn {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: rgb(229, 77, 46);;
   color: white;
   border: none;
   border-radius: 8px;
@@ -66,6 +77,7 @@
   color: red;
   margin: 10px 0;
 }
+
 .signup-link {
   margin-top: 15px;
   font-size: 0.95rem;
@@ -78,4 +90,81 @@
 
 .signup-link a:hover {
   text-decoration: underline;
+}
+
+@media (min-width: 1200px) {
+  .login-box {
+    max-width: 500px;
+    padding: 40px;
+  }
+
+  .login-box h2 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 768px) {
+  .login-container {
+    margin-top: calc(var(--navbar-height) + 30px);
+  }
+
+  .login-box {
+    max-width: 450px;
+    padding: 25px;
+  }
+}
+
+@media (max-width: 767px) {
+  .login-container {
+    margin-top: calc(var(--navbar-height) + 20px);
+    padding: 15px;
+  }
+
+  .login-box {
+    max-width: 90%;
+    padding: 20px;
+  }
+
+  .login-box h2 {
+    font-size: 1.6rem;
+  }
+
+  .input-group input {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    margin-top: calc(var(--navbar-height) + 30px);
+  }
+
+  .login-box {
+    width: 100%;
+    padding: 15px;
+    box-shadow: none;
+    border: 1px solid #eee;
+  }
+
+  .login-box h2 {
+    font-size: 1.4rem;
+  }
+
+  .input-group label {
+    font-size: 0.9rem;
+  }
+
+  .input-group input {
+    font-size: 0.9rem;
+    padding: 9px 10px;
+  }
+
+  .login-btn {
+    font-size: 0.9rem;
+  }
+
+  .error-msg {
+    font-size: 0.9rem;
+  }
 }
