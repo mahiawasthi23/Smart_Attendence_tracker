@@ -1,58 +1,101 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Login = ({ setUser }) => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      const res = await fetch("", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
 
-      const data = await res.json();
+      const res = await axios.post(
+        "https://smart-attendance-backend-3.onrender.com/api/auth/login",
+        formData,
+        { signal: controller.signal }
+      );
 
-      if (res.status === 200 && data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.dispatchEvent(new Event("storageUpdate"));
-        alert(`Welcome ${data.user.username || data.user.name}!`);
-        navigate("/dashboard", { state: { user: data.user } });
-      } else {
-        alert(data.error || "Invalid credentials!");
+      clearTimeout(timeout);
+      setLoading(false);
+
+      localStorage.setItem("token", res.data.token);
+
+      if (res.data.user) {
+        const userObj = typeof res.data.user === "string"
+          ? { email: res.data.user }
+          : res.data.user;
+
+        localStorage.setItem("user", JSON.stringify(userObj));
+        setUser(userObj);
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again later.");
+
+      navigate("/dashboard");
+    } catch (err) {
+      setLoading(false);
+      if (err.code === "ERR_CANCELED") {
+        setError("Request timed out. Please try again.");
+      } else if (err.response && err.response.data) {
+        setError(err.response.data.message || "Invalid credentials.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     }
   };
 
   return (
-    <div className="form-container">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+    <div className="login-container">
+      <div className="login-box">
+        <h2>Login</h2>
+
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password:</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {error && <p className="error-msg">{error}</p>}
+
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="signup-link">
+          Don’t have an account? <a href="/signup">Sign up</a>
+        </p>
+      </div>
     </div>
   );
 };
