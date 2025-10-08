@@ -74,19 +74,19 @@ body {
 
 .nav-links li a:hover,
 .nav-links li button:hover {
-  color: #d62828;
+  color: rgb(229, 77, 46);
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
 
 .nav-links li a.active {
-  color:  rgb(252, 25, 25);
-  border-bottom: 2px solid rgb(252, 25, 25);
+  color:  rgb(229, 77, 46);
+  border-bottom: 2px solid rgb(229, 77, 46);
   padding-bottom: 6px;
 }
 
 .logout-btn {
-  background: #e63946;
+  background: rgb(229, 77, 46);
   color: #fff;
   padding: 0px 16px;
   border-radius: 6px;
@@ -97,7 +97,7 @@ body {
 }
 
 .logout-btn:hover {
-  background: #d62828;
+  background:rgb(229, 77, 46);
   transform: scale(1.05);
 }
 
@@ -129,7 +129,7 @@ body {
     background: white;
     padding: 12px 0;
     gap: 10;
-    border-top: 1px solid #d62828;
+    border-top: 1px solid rgb(229, 77, 46);
     animation: slideDown 0.3s ease;
   }
 
